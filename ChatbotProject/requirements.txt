@@ -1,0 +1,16 @@
+Django==5.1.3
+langchain-together==0.1.2
+langchain-community==0.2.16
+langchain==0.2.16
+langchain-core==0.2.43
+langchain-openai==0.1.25
+langchain-text-splitters==0.2.4
+langsmith==0.1.143
+reportlab==4.2.5
+django-cors-headers==4.6.0
+gunicorn==23.0.0
+python-decouple==3.8
+pytube==15.0.0
+requests==2.32.3
+openai==1.55.0
+youtube-transcript-api==0.6.2
