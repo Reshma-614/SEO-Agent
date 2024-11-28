@@ -1,0 +1,139 @@
+<!-- chatbot/templates/chatbot/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Summary Chatbot</title>
+</head>
+<body>
+    <h1>Video Summary Chatbot</h1>
+    <input type="text" id="video_url" placeholder="Enter YouTube Video URL">
+    <button onclick="getSummary()">Get Summary</button>
+    <h2>Summary:</h2>
+    <pre id="summary"></pre>
+    <button id="download_pdf" style="display:none;" onclick="downloadPdf()">Download Summary as PDF</button>
+
+    <script>
+        async function getSummary() {
+            const videoUrl = document.getElementById("video_url").value;
+
+            try {
+                const response = await fetch('/chatbot/summary/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ video_url: videoUrl })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById("summary").textContent = result.summary;
+                    document.getElementById("download_pdf").style.display = "inline"; // Show the download button
+                } else {
+                    document.getElementById("summary").textContent = result.error || "An error occurred.";
+                }
+            } catch (error) {
+                document.getElementById("summary").textContent = "Failed to fetch the summary. Please try again.";
+                console.error(error);
+            }
+        }
+
+        async function downloadPdf() {
+            const summaryText = document.getElementById("summary").textContent;
+
+            if (!summaryText || summaryText.startsWith("An error occurred")) {
+                alert("Please generate a valid summary first.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/chatbot/generate_pdf/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ summary: summaryText })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'summary.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                } else {
+                    const result = await response.json();
+                    alert(result.error || "Failed to generate the PDF.");
+                }
+            } catch (error) {
+                alert("Failed to generate the PDF. Please try again.");
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Summary Chatbot</title>
+</head>
+<body>
+    <h1>Video Summary Chatbot</h1>
+    <input type="text" id="video_url" placeholder="Enter YouTube Video URL">
+    <button onclick="getSummary()">Get Summary</button>
+    <h2>Summary:</h2>
+    <pre id="summary"></pre>
+
+    <script>
+        async function getSummary() {
+            const videoUrl = document.getElementById("video_url").value;
+            const response = await fetch('/chatbot/summary/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ video_url: videoUrl })
+            });
+            const result = await response.json();
+            document.getElementById("summary").textContent = result.summary || result.error;
+        }
+    </script>
+</body>
+</html> -->
